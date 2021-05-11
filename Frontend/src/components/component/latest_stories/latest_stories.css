@@ -1,0 +1,17 @@
+.titles{
+    margin-top: 60px;
+    color: #231F20;
+    border-bottom: 2px solid #DCDBDB;
+    padding-bottom: 1%;
+}
+
+.links{
+    text-decoration: none;
+    color: black;
+    font-weight: 700;
+}
+
+.links:hover{
+    text-decoration: none;
+    color: #DC143C	;
+}

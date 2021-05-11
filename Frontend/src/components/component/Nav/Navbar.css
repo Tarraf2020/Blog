@@ -1,0 +1,10 @@
+.NavBars{
+    margin-top: -24px;
+}
+.Nav_links{
+    color: white;
+}
+.Nav_links:hover{
+    text-decoration: none;
+    color: gainsboro;
+}

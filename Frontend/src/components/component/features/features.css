@@ -1,0 +1,31 @@
+
+.title{
+    margin-top: 2%;
+    color: #231F20;
+    border-bottom: 2px solid #DCDBDB;
+    padding-bottom: 1%;
+
+}
+
+.first_topic{
+    padding: 3%;
+    margin: 10px;
+    text-align: center;
+    color: white;
+    font-size: 32px;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+.my_row{
+    font-weight: 700;
+    font-family: FreeMono, monospace	;
+}
+.feature_link{
+    text-decoration: none;
+    color: white;
+}
+.feature_link:hover{
+    color: #FFE4C4		;
+    text-decoration: none;
+
+
+}

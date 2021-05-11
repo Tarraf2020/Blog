@@ -1,0 +1,22 @@
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+
+}
+
+.buttons{
+width:100px;
+height: 50px;
+float: right;
+}
+
+textarea {
+    resize: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+ 
+  }
