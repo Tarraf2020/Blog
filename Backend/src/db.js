@@ -75,7 +75,18 @@ const initializeDatabase = async () => {
             if (!rows.length) throw new Error(`no rows found`);
             return rows;
         } catch (e) {
-            throw new Error(`couldn't retrieve contacts: ` + e.message);
+            throw new Error(`couldn't retrieve posts: ` + e.message);
+        }
+    }
+    const pendingPosts = async () => {
+        let statement = `SELECT * FROM post_tbl WHERE status= 'I'`
+       
+        try {
+            const rows = await db.all(statement);
+            if (!rows.length) throw new Error(`no rows found`);
+            return rows;
+        } catch (e) {
+            throw new Error(`couldn't retrieve posts: ` + e.message);
         }
     }
     const messages = async () => {
@@ -91,22 +102,33 @@ const initializeDatabase = async () => {
     }
 
     const postsUser = async () => {
-        let statement = `SELECT name, category, title,  content, created_at, picture FROM post_tbl`
+        let statement = `SELECT id, name, category, title,  content, created_at, picture FROM post_tbl where status = 'A'`
        
         try {
             const rows = await db.all(statement);
             if (!rows.length) throw new Error(`no rows found`);
             return rows;
         } catch (e) {
-            throw new Error(`couldn't retrieve contacts: ` + e.message);
+            throw new Error(`couldn't retrieve posts: ` + e.message);
         }
     }
 
+    const postsID = async (id) => {
+        let statement = `SELECT id, name, category, title,  content, created_at, picture FROM post_tbl WHERE id= ${id}`
+       
+        try {
+            const rows = await db.all(statement);
+            if (!rows.length) throw new Error(`no rows found`);
+            return rows;
+        } catch (e) {
+            throw new Error(`couldn't retrieve posts: ` + e.message);
+        }
+    }
 
     const getPostCategory = async (category) => {
-        let statement = `SELECT name, email, category, title,  content, created_at, picture FROM post_tbl WHERE category = ${category}`
+        let statement = `SELECT id, name, email, category, title,  content, created_at, picture FROM post_tbl WHERE category = ${category}`
         const posts = await db.get(statement);
-        if (!posts) throw new Error(`contact ${category} not found`);
+        if (!posts) throw new Error(`post ${category} not found`);
         return posts;
     }
 
@@ -142,77 +164,36 @@ const initializeDatabase = async () => {
     const deletePosts = async (id) => {
         try {
             const result = await db.run(`DELETE FROM post_tbl WHERE id = ?`, id);
-            if (result.changes === 0) throw new Error(`contact "${id}" does not exist`);
+            if (result.changes === 0) throw new Error(`post "${id}" does not exist`);
             return true;
         } catch (e) {
-            throw new Error(`couldn't delete the contact "${id}": ` + e.message);
+            throw new Error(`couldn't delete the post "${id}": ` + e.message);
+        }
+    }
+
+    const acceptPost = async (id) => {
+        
+        let stmt, params = [];
+            stmt = `UPDATE post_tbl SET  status = 'A' WHERE id = ?`;
+            params = [id];
+        try {
+            const result = await db.run(stmt, params);
+            if (result.changes === 0) throw new Error(`no changes were made`);
+            return true;
+        } catch (e) {
+            throw new Error(`couldn't accept this post ${id}: ` + e.message);
         }
     }
 
 
-    // const getContact = async (id) => {
-    //     let statement = `SELECT contact_id AS id, name, email FROM contacts WHERE contact_id = ${id}`
-    //     const contact = await db.get(statement);
-    //     if (!contact) throw new Error(`contact ${id} not found`);
-    //     return contact;
-    // }
-
-    // const createContact = async (props) => {
-    //     if (!props || !props.name || !props.email) {
-    //         throw new Error(`you must provide a name and an email`);
-    //     }
-    //     const { name, email } = props;
-    //     try {
-    //         const result = await db.run(`INSERT INTO contacts (name,email) VALUES (?, ?)`, [name, email]);
-    //         const id = result.lastID;
-    //         return id;
-    //     } catch (e) {
-    //         throw new Error(`couldn't insert this combination: ` + e.message);
-    //     }
-    // }
-
-    // const deleteContact = async (id) => {
-    //     try {
-    //         const result = await db.run(`DELETE FROM contacts WHERE contact_id = ?`, id);
-    //         if (result.changes === 0) throw new Error(`contact "${id}" does not exist`);
-    //         return true;
-    //     } catch (e) {
-    //         throw new Error(`couldn't delete the contact "${id}": ` + e.message);
-    //     }
-    // }
-
-    // const updateContact = async (id, props) => {
-    //     if (!props && !(props.name && props.email)) {
-    //         throw new Error(`you must provide a name or an email`);
-    //     }
-    //     const { name, email } = props;
-    //     let stmt, params = [];
-
-    //     if (name && email) {
-    //         stmt = `UPDATE contacts SET email = ?, name = ? WHERE contact_id = ?`;
-    //         params = [name, email, id];
-    //     }
-    //     else if (name && !email) {
-    //         stmt = `UPDATE contacts SET name = ? WHERE contact_id = ?`;
-    //         params = [name, id];
-    //     }
-    //     else if (email && !name) {
-    //         stmt = `UPDATE contacts SET email = ? WHERE contact_id = ?`;
-    //         params = [email, id];
-    //     }
-
-    //     try {
-    //         const result = await db.run(stmt, params);
-    //         if (result.changes === 0) throw new Error(`no changes were made`);
-    //         return true;
-    //     } catch (e) {
-    //         throw new Error(`couldn't update the contact ${id}: ` + e.message);
-    //     }
-    // }
+  
 
     const controller = {
         postsAdmin,
+        pendingPosts,
+        acceptPost,
         postsUser,
+        postsID,
         createPost,
         getPostCategory,
         deletePosts,

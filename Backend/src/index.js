@@ -3,14 +3,14 @@ const db = require("./db");
 
 const start = async() => {
     const controller = await db.initializeDatabase()
-    app.get('/', (req, res) => res.send("ok"));
+    // app.get('/', (req, res) => res.send("ok"));
 
     //user post
-    app.get('/posts', async (req, res, next) => {
+    app.get('/', async (req, res, next) => {
         
         try {
             const userposts = await controller.postsUser();
-            res.json({  result: userposts });
+            res.json({ success: true, result: userposts });
         } catch (e) {
             next(e);
         }
@@ -21,7 +21,16 @@ const start = async() => {
         
         try {
             const adminposts = await controller.postsAdmin();
-            res.json({  result: adminposts });
+            res.json({ success: true, result: adminposts });
+        } catch (e) {
+            next(e);
+        }
+    })
+    app.get('/dashboard/pending', async (req, res, next) => {
+        
+        try {
+            const adminposts = await controller.pendingPosts();
+            res.json({ success: true, result: adminposts });
         } catch (e) {
             next(e);
         }
@@ -33,7 +42,7 @@ const start = async() => {
         
         try {
             const messages = await controller.messages();
-            res.json(messages);
+            res.json({success : true, result: messages});
         } catch (e) {
             next(e);
         }
@@ -41,23 +50,36 @@ const start = async() => {
 
 
     // READ BY CATEGORY
-    app.get('/posts/:category', async (req, res, next) => {
+    app.get('/posts/category/:category', async (req, res, next) => {
         const { category } = req.params
         try {
             const posts = await controller.getPostCategory(category);
-            res.json({  result: posts });
+            res.json({ success: true, result: posts });
         } catch (e) {
             next(e);
         }
     })
 
+
+      // READ BY ID
+      app.get('/posts/:id', async (req, res, next) => {
+        const { id } = req.params
+        try {
+            const post = await controller.postsID(id);
+            res.json({ success: true, result: post });
+        } catch (e) {
+            next(e);
+        }
+    })
+    
+
     
       // CREATE POST
-  app.get('/posts/add/create', async (req, res, next) => {
+  app.get('/post/add/create', async (req, res, next) => {
     const { name, email, category, title,  content,  picture } = req.query;
     try {
         const result = await controller.createPost({ name, email, category, title,  content, picture });
-        res.json({  result });
+        res.json({ success: true, result });
     } catch (e) {
         next(e);
     }
@@ -67,7 +89,7 @@ const start = async() => {
     const { username, email, message } = req.query;
     try {
         const messages = await controller.createMessage({ username, email, message });
-        res.json({  messages });
+        res.json({ success: true, messages });
     } catch (e) {
         next(e);
     }
@@ -78,11 +100,23 @@ const start = async() => {
         const { id } = req.params
         try {
             const result = await controller.deletePosts(id);
-            res.json({  result });
+            res.json({ success: true, result });
         } catch (e) {
             next(e);
         }
     })
+
+    //ACCEPT
+    app.get('/dashboard/accept/:id', async (req, res, next) => {
+        const { id } = req.params;
+        try {
+            const result = await controller.acceptPost(id);
+            res.json({ success: true, result });
+        } catch (e) {
+            next(e);
+        }
+    })
+
 
 
 }
